@@ -12,7 +12,7 @@ require 'rails_helper'
 # end
 RSpec.describe ApplicationHelper, type: :helper do
   it "full title helper" do
-    assert_equal full_title,         "Ruby on Rails Tutorial Sample App"
-    assert_equal full_title("Help"), "Help | Ruby on Rails Tutorial Sample App"
+    expect(full_title).to eq "Ruby on Rails Tutorial Sample App"
+    expect(full_title("Help")).to eq "Help | Ruby on Rails Tutorial Sample App"
   end
 end

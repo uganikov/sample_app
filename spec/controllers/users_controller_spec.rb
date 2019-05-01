@@ -8,13 +8,13 @@ RSpec.describe UsersController, type: :controller do
   describe "when not logged in" do 
     it "should get new" do
       get :new
-      assert_response :success
+      expect(response).to have_http_status(:success)
     end
 
     describe "should redirect to login_url" do
       after do
-        assert_redirected_to login_url
-        expect(flash.empty?).to be_falsey
+        is_expected.to redirect_to login_url
+        expect(flash).not_to be_empty
       end
 
       it "is edit" do
@@ -51,7 +51,7 @@ RSpec.describe UsersController, type: :controller do
 
     after do
       expect(flash.empty?).to be_truthy
-      assert_redirected_to root_url
+      is_expected.to redirect_to root_url
     end
 
     it "should redirect edit" do
@@ -70,15 +70,15 @@ RSpec.describe UsersController, type: :controller do
     end
 
     it "should not allow the admin attribute to be edited via the web" do
-      expect(other_user.admin?).to be_falsey
+      expect(other_user).not_to be_admin
       patch :update, params: {id: other_user,  
                                       user: { admin: 1 } }
-      expect(other_user.reload.admin?).to be_falsey
+      expect(other_user.reload).not_to be_admin
     end
 
     it "should redirect destroy" do
       expect{delete :destroy, params: { id: user }}.to_not change { User.count }
-      assert_redirected_to root_url
+      is_expected.to redirect_to root_url
     end
   end
 end

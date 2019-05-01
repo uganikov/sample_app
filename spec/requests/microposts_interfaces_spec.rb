@@ -5,48 +5,46 @@ RSpec.describe "MicropostsInterfaces", type: :request do
 
   it "micropost interface" do
     log_in_as(user)
-    get root_path
-    assert_select 'div.pagination'
-    assert_select 'input[type=file]'
+    visit root_path
+    expect(page).to have_selector "div.pagination"
+    expect(page).to have_selector "input[type=file]"
     # 無効な送信
-    expect{ 
-      post microposts_path, params: { micropost: { content: "" } }
+    expect{
+      click_on "Post"
     }.to_not change { Micropost.count }
-    assert_select 'div#error_explanation'
+    expect(page).to have_selector "div#error_explanation"
     # 有効な送信
     content = "This micropost really ties the room together"
-    picture = fixture_file_upload('test/fixtures/rails.png', 'image/png')
+    fill_in "micropost_content", with: content
+    attach_file('spec/fixtures/rails.png')
     expect{ 
-      post microposts_path, params: { micropost:
-                                      { content: content,
-                                        picture: picture } }
+      click_on "Post"
     }.to change { Micropost.count }.by(1)
-    assert assigns(:micropost).picture?
-    assert_redirected_to root_url
-    follow_redirect!
-    assert_match content, response.body
+    expect(find('.content img')[:src]).to match /rails.png/
+    expect(page.current_url).to eq(root_url)
+    expect(page).to have_selector ".content", text: content
     # 投稿を削除する
-    assert_select 'a', text: 'delete'
+    expect(page).to have_selector "a", text: 'delete'
     first_micropost = user.microposts.paginate(page: 1).first
     expect{ 
-      delete micropost_path(first_micropost)
+      click_on "delete", match: :first
     }.to change { Micropost.count }.by(-1)
     # 違うユーザーのプロフィールにアクセス (削除リンクがないことを確認)
-    get user_path(users(:archer))
-    assert_select 'a', text: 'delete', count: 0
+    visit user_path(users(:archer))
+    expect(page).not_to have_selector "a", text: 'delete'
   end
 
   it "micropost sidebar count" do
     log_in_as(user)
-    get root_path
-    assert_match "#{user.microposts.count} microposts", response.body
+    visit root_path
+    expect(page).to have_selector "span", text: "#{user.microposts.count} microposts" #class かなんかつけるべき
     # まだマイクロポストを投稿していないユーザー
     other_user = users(:malory)
     log_in_as(other_user)
-    get root_path
-    assert_match "0 microposts", response.body
+    visit root_path
+    expect(page).to have_selector "span", text: "0 microposts" #class かなんかつけるべき
     other_user.microposts.create!(content: "A micropost")
-    get root_path
-    assert_match "1 micropost", response.body
+    visit root_path
+    expect(page).to have_selector "span", text: "1 micropost" #class かなんかつけるべき
   end
 end

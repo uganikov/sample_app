@@ -6,47 +6,46 @@ RSpec.describe "UsersSignups", type: :request do
   end
 
   it "invalid signup information" do
-    get signup_path
-    assert_select 'form[action="/signup"]'
+    visit signup_path
+    expect(page).to have_selector 'form[action="/signup"]'
     expect {
-      post signup_path, params: { user: { name:  "",
-                                         email: "user@invalid",
-                                         password:              "foo",
-                                         password_confirmation: "bar" } }
+      fill_in "Email", with: "user@invalid"
+      fill_in "Password", with: "foo"
+      fill_in "Password confirmation", with: "bar"
+      click_on "Create my account"
     }.to_not change {User.count}
-    assert_template 'users/new'
-    assert_select 'div#error_explanation'
-    assert_select 'div.field_with_errors'
-    assert_select 'div.alert'
-    assert_select 'div.alert-danger'
+    expect(page).to have_selector 'div#error_explanation'
+    expect(page).to have_selector 'div.field_with_errors'
+    expect(page).to have_selector 'div.alert'
+    expect(page).to have_selector 'div.alert-danger'
   end
 
   it "valid signup information with account activation" do
-    get signup_path
+    visit signup_path
     expect {
-      post users_path, params: { user: { name:  "Example User",
-                                         email: "user@example.com",
-                                         password:              "password",
-                                         password_confirmation: "password" } }
+      fill_in "Name", with: "Example User"
+      fill_in "Email", with: "user@example.com"
+      fill_in "Password", with: "password"
+      fill_in "Password confirmation", with: "password"
+      click_on "Create my account"
     }.to change {User.count}.by(1)
     expect(ActionMailer::Base.deliveries.size).to eq(1)
-    user = assigns(:user)
-    expect(user.activated?).to be_falsey
+    token = steal_token("account_activations")
+    user = User.find_by(email: "user@example.com")
+    expect(user).not_to be_activated
     # 有効化していない状態でログインしてみる
     log_in_as(user)
     expect(is_logged_in?).to be_falsey
     # 有効化トークンが不正な場合
-    get edit_account_activation_path("invalid token", email: user.email)
+    visit edit_account_activation_path("invalid token", email: user.email)
     expect(is_logged_in?).to be_falsey
     # トークンは正しいがメールアドレスが無効な場合
-    get edit_account_activation_path(user.activation_token, email: 'wrong')
+    visit edit_account_activation_path(token, email: 'wrong')
     expect(is_logged_in?).to be_falsey
     # 有効化トークンが正しい場合
-    get edit_account_activation_path(user.activation_token, email: user.email)
-    expect(user.reload.activated?).to be_truthy
-    follow_redirect!
-    assert_template 'users/show'
-    expect(flash.empty?).to be_falsey
+    visit edit_account_activation_path(token, email: user.email)
+    expect(user.reload).to be_activated
+    expect(page).to have_selector 'div.alert-success'
     expect(is_logged_in?).to be_truthy
   end
 end

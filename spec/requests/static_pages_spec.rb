@@ -6,31 +6,31 @@ RSpec.describe "StaticPages", type: :request do
   end
 
   it "get root" do
-    get root_url
-    expect(response).to have_http_status(200)
+    visit root_url
+    expect(page).to have_http_status(:success)
   end
 
   it "get home" do
-    get root_path
-    expect(response).to have_http_status(200)
-    assert_select "title", "#{@base_title}"
+    visit root_path
+    expect(page).to have_http_status(:success)
+    expect(page).to have_title "#{@base_title}"
   end
 
   it "get help" do
-    get help_path
-    expect(response).to have_http_status(200)
-    assert_select "title", "Help | #{@base_title}"
+    visit help_path
+    expect(page).to have_http_status(:success)
+    expect(page).to have_title "Help | #{@base_title}"
   end
 
   it "get about" do
-    get about_path
-    expect(response).to have_http_status(200)
-    assert_select "title", "About | #{@base_title}"
+    visit about_path
+    expect(page).to have_http_status(:success)
+    expect(page).to have_title "About | #{@base_title}"
   end
 
   it "get contact" do
-    get contact_path
-    expect(response).to have_http_status(200)
-    assert_select "title", "Contact | #{@base_title}"
+    visit contact_path
+    expect(page).to have_http_status(:success)
+    expect(page).to have_title "Contact | #{@base_title}"
   end
 end

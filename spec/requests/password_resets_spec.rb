@@ -8,72 +8,64 @@ RSpec.describe "PasswordResets", type: :request do
   end
 
   it "password resets" do
-    get new_password_reset_path
-    assert_template 'password_resets/new'
+    visit new_password_reset_url
     # メールアドレスが無効
-    post password_resets_path, params: { password_reset: { email: "" } }
-    expect(flash.empty?).to be_falsey
-    assert_template 'password_resets/new'
+    click_on "Submit"
+    expect(page).to have_selector "div.alert-danger"
+    expect(page.current_url).to eq password_resets_url
     # メールアドレスが有効
-    post password_resets_path,
-         params: { password_reset: { email: user.email } }
+    fill_in "Email", with: user.email
+    click_on "Submit"
     expect(user.reset_digest).not_to eq(user.reload.reset_digest)
-    assert_equal 1, ActionMailer::Base.deliveries.size
-    expect(flash.empty?).to be_falsey
-    assert_redirected_to root_url
+    expect(ActionMailer::Base.deliveries.size).to eq 1
+    expect(page).to have_selector "div.alert-info"
+    expect(page.current_url).to eq root_url
+    token = steal_token("password_resets")
     # パスワード再設定フォームのテスト
-    user = assigns(:user)
     # メールアドレスが無効
-    get edit_password_reset_path(user.reset_token, email: "")
-    assert_redirected_to root_url
+    visit edit_password_reset_path(token, email: "")
+    expect(page.current_url).to eq root_url
     # 無効なユーザー
     user.toggle!(:activated)
-    get edit_password_reset_path(user.reset_token, email: user.email)
-    assert_redirected_to root_url
+    visit edit_password_reset_path(token, email: user.email)
+    expect(page.current_url).to eq root_url
     user.toggle!(:activated)
     # メールアドレスが有効で、トークンが無効
-    get edit_password_reset_path('wrong token', email: user.email)
-    assert_redirected_to root_url
+    visit edit_password_reset_path('wrong token', email: user.email)
+    expect(page.current_url).to eq root_url
     # メールアドレスもトークンも有効
-    get edit_password_reset_path(user.reset_token, email: user.email)
-    assert_template 'password_resets/edit'
-    assert_select "input[name=email][type=hidden][value=?]", user.email
-    # 無効なパスワードとパスワード確認
-    patch password_reset_path(user.reset_token),
-          params: { email: user.email,
-                    user: { password:              "foobaz",
-                            password_confirmation: "barquux" } }
-    assert_select 'div#error_explanation'
+    visit edit_password_reset_path(token, email: user.email)
+    expect(page.current_url).not_to eq root_url
+    expect(page).to have_selector "input[name=email][value='#{user.email}']", visible: false
     # パスワードが空
-    patch password_reset_path(user.reset_token),
-          params: { email: user.email,
-                    user: { password:              "",
-                            password_confirmation: "" } }
-    assert_select 'div#error_explanation'
+    click_on "Update password"
+    expect(page).to have_selector 'div#error_explanation'
+    # 無効なパスワードとパスワード確認
+    fill_in "Password", with: "foobaz"
+    fill_in "Confirmation", with: "barquux"
+    click_on "Update password"
+    expect(page).to have_selector 'div#error_explanation'
     # 有効なパスワードとパスワード確認
-    patch password_reset_path(user.reset_token),
-          params: { email: user.email,
-                    user: { password:              "foobaz",
-                            password_confirmation: "foobaz" } }
+    fill_in "Password", with: "foobaz"
+    fill_in "Confirmation", with: "foobaz"
+    click_on "Update password"
+    expect(page).to have_selector "div.alert-success"
     expect(is_logged_in?).to be_truthy
-    expect(flash.empty?).to be_falsey
-    assert_redirected_to user
-    assert_nil user.reload.reset_digest
+    expect(page.current_url).to eq user_url(user)
+    expect(user.reload.reset_digest).to be_nil
   end
 
   it "expired token" do
-    get new_password_reset_path
-    post password_resets_path,
-         params: { password_reset: { email: user.email } }
-
-    user = assigns(:user)
+    visit new_password_reset_url
+    fill_in "Email", with: user.email
+    click_on "Submit"
+    token = steal_token("password_resets")
+    visit edit_password_reset_path(token, email: user.email)
     user.update_attribute(:reset_sent_at, 3.hours.ago)
-    patch password_reset_path(user.reset_token),
-          params: { email: user.email,
-                    user: { password:              "foobar",
-                            password_confirmation: "foobar" } }
-    assert_response :redirect
-    follow_redirect!
-    assert_match /expired/i, response.body
+    fill_in "Password", with: "foobaz"
+    fill_in "Confirmation", with: "foobaz"
+    click_on "Update password"
+    expect(page.current_url).to eq new_password_reset_url
+    expect(page).to have_selector "div.alert-danger", text: /expired/i
   end
 end

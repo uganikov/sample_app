@@ -62,5 +62,6 @@ RSpec.configure do |config|
   config.include LoginHelper
   config.include LoginHelperRequest ,type: :request
   config.include ApplicationHelper
+  config.include Capybara::DSL
   config.global_fixtures = :all
 end

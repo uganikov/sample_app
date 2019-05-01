@@ -5,30 +5,28 @@ RSpec.describe "layout links", type: :request do
 
   describe "GET /" do
     it "works! (now write some real specs)" do
-      get root_path
-      expect(response).to have_http_status(200)
-      assert_template 'static_pages/home'
-      assert_select "a[href=?]", root_path, count: 2
-      assert_select "a[href=?]", help_path
-      assert_select "a[href=?]", about_path
-      assert_select "a[href=?]", contact_path
-      assert_select "a[href=?]", login_path
+      visit root_path
+      expect(page).to have_http_status(:success)
+      expect(page).to have_selector "a[href='#{root_path}']", count: 2
+      expect(page).to have_selector "a[href='#{help_path}']"
+      expect(page).to have_selector "a[href='#{about_path}']"
+      expect(page).to have_selector "a[href='#{contact_path}']"
+      expect(page).to have_selector "a[href='#{login_path}']"
     end
 
     it "works! (now write some real specs)" do
       log_in_as(user)
-      get root_path
-      expect(response).to have_http_status(200)
-      assert_template 'static_pages/home'
-      assert_select "a[href=?]", users_path
-      assert_select "a[href=?]", user_path(user)
-      assert_select "a[href=?]", edit_user_path(user)
-      assert_select "a[href=?]", logout_path
-      assert_select 'strong.stat', count: 2
-      get contact_path
-      assert_select "title", full_title("Contact")
-      get signup_path
-      assert_select "title", full_title("Sign up")
+      visit root_path
+      expect(page).to have_http_status(:success)
+      expect(page).to have_selector "a[href='#{users_path}']"
+      expect(page).to have_selector "a[href='#{user_path(user)}']"
+      expect(page).to have_selector "a[href='#{edit_user_path(user)}']"
+      expect(page).to have_selector "a[href='#{logout_path}']"
+      expect(page).to have_selector 'strong.stat', count: 2
+      visit contact_path
+      expect(page).to have_title full_title("Contact")
+      visit signup_path
+      expect(page).to have_title full_title("Sign up")
     end
   end
 end

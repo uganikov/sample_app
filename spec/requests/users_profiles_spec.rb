@@ -4,16 +4,15 @@ RSpec.describe "UsersProfiles", type: :request do
   let(:user) { users(:michael) }
 
   it "profile display" do
-    get user_path(user)
-    assert_template 'users/show'
-    assert_select 'title', full_title(user.name)
-    assert_select 'h1', text: user.name
-    assert_select 'h1>img.gravatar'
-    assert_match user.microposts.count.to_s, response.body
-    assert_select 'div.pagination', count: 1
+    visit user_path(user)
+    expect(page).to have_title full_title(user.name)
+    expect(page).to have_selector 'h1', text: user.name
+    expect(page).to have_selector 'h1>img.gravatar'
+    expect(page).to have_content user.microposts.count.to_s
+    expect(page).to have_selector 'div.pagination', count: 1
     user.microposts.paginate(page: 1).each do |micropost|
-      assert_match micropost.content, response.body
+      expect(page).to have_content micropost.content
     end
-    assert_select 'strong.stat', count: 2
+    expect(page).to have_selector 'strong.stat', count: 2
   end
 end

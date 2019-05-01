@@ -1,29 +1,29 @@
 require 'rails_helper'
 
 RSpec.describe Micropost, type: :model do
-  let(:user) { users(:michael) }
-  let(:micropost) { user.microposts.build(content: "Lorem ipsum") }
+  let(:micropost) { users(:michael).microposts.build(content: "Lorem ipsum") }
 
+  subject { micropost }
   it "should be valid" do
-    expect(micropost.valid?).to be_truthy
+    is_expected.to be_valid
   end
 
   it "user id should be present" do
     micropost.user_id = nil
-    expect(micropost.valid?).to be_falsey
+    is_expected.not_to be_valid
   end
 
   it "content should be present" do
     micropost.content = "   "
-    expect(micropost.valid?).to be_falsey
+    is_expected.not_to be_valid
   end
 
   it "content should be at most 140 characters" do
     micropost.content = "a" * 141
-    expect(micropost.valid?).to be_falsey
+    is_expected.not_to be_valid
   end
 
   it "order should be most recent first" do
-    assert_equal microposts(:most_recent), Micropost.first
+    expect(microposts(:most_recent)).to eq Micropost.first
   end
 end

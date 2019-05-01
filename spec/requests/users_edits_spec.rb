@@ -5,50 +5,35 @@ RSpec.describe "UsersEdits", type: :request do
 
   it "unsuccessful edit" do
     log_in_as(user)
-    get edit_user_path(user)
-    assert_template 'users/edit'
-    patch user_path(user), params: { user: { name:  "",
-                                              email: "foo@invalid",
-                                              password:              "foo",
-                                              password_confirmation: "bar" } }
-
-    assert_template 'users/edit'
-    assert_select "div", "The form contains 4 errors."
-  end
-
-  it "successful edit" do
-    log_in_as(user)
-    get edit_user_path(user)
-    assert_template 'users/edit'
-    name  = "Foo Bar"
-    email = "foo@bar.com"
-    patch user_path(user), params: { user: { name:  name,
-                                              email: email,
-                                              password:              "",
-                                              password_confirmation: "" } }
-    expect(flash.empty?).to be_falsey
-    assert_redirected_to user
-    user.reload
-    assert_equal name,  user.name
-    assert_equal email, user.email
+    visit edit_user_path(user)
+    fill_in "Name", with: ""
+    fill_in "Email", with: "foo@invalid"
+    fill_in "Password", with: "foo"
+    fill_in "Password confirmation", with: "bar"
+    click_on "commit"
+    expect(page).to have_selector "div", text: "The form contains 4 errors."
   end
 
   it "successful edit with friendly forwarding" do
-    get edit_user_path(user)
-    assert_equal session[:forwarding_url], edit_user_url(user)
-    log_in_as(user)
-    assert_redirected_to edit_user_url(user)
-    expect(session[:forwarding_url]).to be_falsey
+    visit edit_user_path(user)
+
+    expect(page.current_url).to eq(login_url)
+    fill_in "Email", with: user.email
+    fill_in "Password", with: 'password'
+    click_on "commit"
+
+    expect(page.current_url).to eq(edit_user_url(user))
     name  = "Foo Bar"
     email = "foo@bar.com"
-    patch user_path(user), params: { user: { name:  name,
-                                              email: email,
-                                              password:              "",
-                                              password_confirmation: "" } }
-    expect(flash.empty?).to be_falsey
-    assert_redirected_to user
+    fill_in "Name", with:  name
+    fill_in "Email", with:  email
+    click_on "commit"
+
+    expect(page).to have_selector "div.alert-success", text: "Profile updated"
+    expect(page.current_url).to eq(user_url(user))
+
     user.reload
-    assert_equal name,  user.name
-    assert_equal email, user.email
+    expect(user.name).to eq name
+    expect(user.email).to eq email
   end
 end
