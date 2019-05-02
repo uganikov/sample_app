@@ -27,3 +27,5 @@
 
 # Ignore CarrierWave uploads
 /public/uploads
+
+/.rspec
