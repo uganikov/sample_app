@@ -64,4 +64,10 @@ RSpec.configure do |config|
   config.include ApplicationHelper
   config.include Capybara::DSL
   config.global_fixtures = :all
+  config.after(:each) {
+    # ダサい
+    Rails.application.routes.default_url_options[:locale] = nil
+    ActionMailer::Base.default_url_options[:locale] = nil
+    I18n.locale = I18n.default_locale
+  }
 end
