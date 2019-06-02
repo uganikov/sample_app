@@ -1,7 +1,14 @@
-%header.navbar.navbar-fixed-top.navbar-inverse
+%nav.navbar.navbar-fixed-top.navbar-inverse
   .container
-    = link_to "sample app", root_path, id: "logo"
-    %nav
+    .navbar-header
+      %button.navbar-toggle.collapsed{type: "button", "data-toggle": "collapse", "data-target": "#navbar-menu"}
+        %span.sr-only
+          Toggle navigation
+        %span.icon-bar
+        %span.icon-bar
+        %span.icon-bar
+      = link_to "sample app", root_path, id: "logo", class: "navbar-brand"
+    .collapse.navbar-collapse#navbar-menu
       %ul.nav.navbar-nav.navbar-right
         %li<
           = link_to "Home",   root_path
