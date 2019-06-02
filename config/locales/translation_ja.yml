@@ -33,3 +33,41 @@ ja:
         remember_digest: ダイジェストを覚えている  #g
         reset_digest: ダイジェストをリセット  #g
         reset_sent_at: リセットの送信日  #g
+
+  will_paginate:
+    previous_label: "前へ"
+    next_label: "次へ"
+    page_gap: "..."
+
+  account_activations_controller:
+    edit:
+      success: "アカウントがアクティベートされました!"
+      danger: "アクティベーションリンクが不正です"
+  application_controller:
+    logged_in_user:
+      danger: "ログインしてください"
+  microposts_controller:
+    create:
+      success: "マイクロポストが作成されました!"
+    destroy:
+      success: "マイクロポストが削除されました"
+  password_resets_controller:
+    create:
+      info: "パスワードリセット方法が記載されたメールを送信しました"
+      danger: "メールアドレスが見つかりません"
+    update:
+      success: "パスワードはリセットされました"
+    check_expiration:
+      danger: "パスワードリセットの有効期限切れです"
+  sessions_controller: 
+    create:
+      warning: "アカウントはまだアクティベートされていません。アクティベーションリンクが記載されたメールを確認してください。"
+      danger: 'メールアドレス/パスワードの組み合わせが不正です'
+  users_controller: 
+    create:
+      info: "あなたのアカウントをアクティベートするために、メールを確認してください"
+    update:
+      success: "プロフィールが更新されました"
+    destroy:
+      success: "ユーザが削除されました"
+

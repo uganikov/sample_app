@@ -1,0 +1,33 @@
+en:
+  account_activations_controller:
+    edit:
+      success: "Account activated!"
+      danger: "Invalid activation link"
+  application_controller:
+    logged_in_user:
+      danger: "Please log in."
+  microposts_controller:
+    create:
+      success: "Micropost created!"
+    destroy:
+      success: "Micropost deleted"
+  password_resets_controller:
+    create:
+      info: "Email sent with password reset instructions"
+      danger: "Email address not found"
+    update:
+      success: "Password has been reset."
+    check_expiration:
+      danger: "Password reset has expired."
+  sessions_controller: 
+    create:
+      warning: "Account not activated. Check your email for the activation link."
+      danger: 'Invalid email/password combination'
+  users_controller: 
+    create:
+      info: "Please check your email to activate your account."
+    update:
+      success: "Profile updated"
+    destroy:
+      success: "User deleted"
+

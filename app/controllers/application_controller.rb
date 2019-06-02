@@ -10,7 +10,7 @@ protected
   def logged_in_user
     unless logged_in?
       store_location
-      flash[:danger] = "Please log in."
+      flash[:danger] = I18n.t("application_controller.logged_in_user.danger")
       redirect_to login_url
     end
   end
