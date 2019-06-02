@@ -1,0 +1,35 @@
+ja:
+  activerecord:
+    models:
+      micropost: マイクロポスト  #g
+      relationship: 関係  #g
+      user: ユーザー  #g
+
+    attributes:
+      micropost:
+        content: コンテンツ  #g
+        picture: 画像  #g
+        user: :activerecord.models.user  #g
+
+      relationship:
+        followed: :activerecord.models.followed  #g
+        follower: :activerecord.models.follower  #g
+
+      user:
+        activated: 有効化  #g
+        activated_at: で有効化  #g
+        activation_digest: アクティベーションダイジェスト  #g
+        active_relationships: アクティブな関係  #g
+        admin: 管理者  #g
+        email: Email
+        followers: フォロワー  #g
+        following: 以下  #g
+        microposts: マイクロポスト  #g
+        name: 名前
+        password: Password
+        password_confirmation: Password(確認)
+        passive_relationships: 受動的な関係  #g
+        password_digest: パスワードダイジェスト  #g
+        remember_digest: ダイジェストを覚えている  #g
+        reset_digest: ダイジェストをリセット  #g
+        reset_sent_at: リセットの送信日  #g
