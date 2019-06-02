@@ -1,0 +1,9 @@
+%h1 サンプルアプリケーション
+
+%p こんにちわ #{@user.name},
+
+%p
+  サンプルアプリケーションへようこそ! 下のリンクをクリックするとあなたのアカウントがアクティベートされます:
+
+= link_to "アクティベート", edit_account_activation_url(@user.activation_token,
+                                                    email: @user.email)

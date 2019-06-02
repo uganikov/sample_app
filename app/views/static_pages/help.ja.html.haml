@@ -1,0 +1,10 @@
+- provide(:title, "ヘルプ")
+%h1 ヘルプ
+%p
+  Ruby on Rails チュートリアルに関する疑問は
+  #{link_to "Rails Tutorial ヘルプセクション", "https://railstutorial.jp/help"} をご覧ください。
+  このサンプルアプリケーションに関する疑問は
+  %a{href: "https://railstutorial.jp/#ebook"}<>
+    = surround "", "の本" do
+      %em Ruby on Rails チュートリアル
+  をご覧ください。

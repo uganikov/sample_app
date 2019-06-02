@@ -15,7 +15,7 @@ RSpec.describe "I18n", type: :request do
   it "is Japanese when instruct by query parameter or url" do
     log_in_as(user)
     visit "#{url}?locale=ja"
-    click_on("Home")
+    click_on("ホーム")
     expect(page.current_url).to eq root_url(locale: :ja)
     expect(page).to have_content "分"
   end
@@ -32,7 +32,7 @@ RSpec.describe "I18n", type: :request do
     log_in_as(user)
     page.driver.header('Accept-Language', "ja-JP")
     visit "#{url}"
-    click_on("Home")
+    click_on("ホーム")
     expect(page.current_url).to eq root_url
     expect(page).to have_content "分"
   end
